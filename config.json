@@ -1,0 +1,13 @@
+{
+    "vehicle_speed": [20, 40, 60, 80, 100, 120],
+	"vehicles": [
+        {
+            "axle_qtty": 1,
+            "axle_dist": [4.8, 1.2],
+            "axle_st_load": [6]
+        }
+    ],
+    "sensor_qtty": 5,
+    "sensor_distance": 2.0,
+    "number_of_runs": 100
+}
