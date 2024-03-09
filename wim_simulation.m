@@ -4,7 +4,7 @@ clear
 
 config = jsondecode(fileread('config.json'));   % config file
 
-v_speeds = config.vehicle_speed./3.6;            % vehicle speed (km/h -> m/s) 
+v_speeds = config.vehicle_speed./3.6;           % vehicle speed (km/h -> m/s) 
 v_qtty = length(config.vehicles);
 s_qtty = config.sensor_qtty;                    % number of sensors
 s_dist = config.sensor_distance;                % distance between sensors (meters)
@@ -27,10 +27,10 @@ t = (0:w_time_res:w_time_end-w_time_res);       % time vector
 t_size = size(t,2);                             % time vector size
 
 % f1 and f2 range (Hz)
-w_f1_min = 1;               
-w_f1_max = 4;
-w_f2_min = 8;
-w_f2_max = 15;
+f1_min = 1;               
+f1_max = 5;
+f2_min = 8;
+f2_max = 15;
 
 % TODO: amplitude should to depend on vehicle speed
 w_f1_amp = 1;     	% first dynamic load amplitude (Kg)    
@@ -41,9 +41,9 @@ w_signal = zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty),t_size);
 
 for i = 1:n_sim
     for j = 1:v_qtty
-        w_f1 = (rand(1)*(w_f1_max-w_f1_min)) + w_f1_min;
-        w_f2 = (rand(1)*(w_f2_max-w_f2_min)) + w_f2_min;
-        w_phase = (rand(1)*(2*pi-0)) + 0;
+        w_f1 = (rand(1)*(f1_max-f1_min)) + f1_min;    % TODO: seed deve ser sempre aleatório
+        w_f2 = (rand(1)*(f2_max-f2_min)) + f2_min;    % TODO: seed deve ser sempre aleatório
+        w_phase = (rand(1)*(2*pi-0)) + 0;                   % TODO: seed deve ser sempre aleatório
 
         axle_qtty = config.vehicles(j).axle_qtty;
         
@@ -154,12 +154,12 @@ end
 csvName = ['output_s',num2str(s_qtty),'_n',num2str(n_sim),'.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');
-    fprintf(csvFile, 'speed,mv_min,mv_max,mv_mean,pchip_min,pchip_max,pchip_mean,makima_min,makima_max,makima_mean,spline_min,spline_max,spline_mean\n');
+    fprintf(csvFile, 'speed,mean_mv,mean_pchip,mean_makima,mean_spline,std_mv,std_pchip,std_makima,std_spline,min_mv,min_pchip,min_makima,min_spline,max_mv,max_pchip,max_makima,max_spline\n');
 else
     csvFile = fopen(csvName, 'a');
 end
 
-fprintf(csvFile, '%.0f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n', v_speed*3.6,min(err_axl_mv),max(err_axl_mv), mean(err_axl_mv),min(err_axl_pchip),max(err_axl_pchip), mean(err_axl_pchip),min(err_axl_makima),max(err_axl_makima), mean(err_axl_makima),min(err_axl_spline),max(err_axl_spline), mean(err_axl_spline));
+fprintf(csvFile, '%.0f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n', v_speed*3.6,mean(err_axl_mv),mean(err_axl_pchip),mean(err_axl_makima),mean(err_axl_spline),std(err_axl_mv),std(err_axl_pchip),std(err_axl_makima),std(err_axl_spline),min(err_axl_mv),min(err_axl_pchip),min(err_axl_makima),min(err_axl_spline),max(err_axl_mv),max(err_axl_pchip), max(err_axl_makima),max(err_axl_spline));
 fclose(csvFile);
 
 end
