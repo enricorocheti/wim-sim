@@ -34,9 +34,9 @@ f1_max = 5;
 f2_min = 8;
 f2_max = 15;
 
-% dynamic load amplitudes (tons) TODO: should depend on vehicle speed
-w1 = 1;   
-w2 = 0.5; 
+% dynamic load amplitudes (tons)
+w1 = 0.004167*(v_speed*3.6) + 0.015000; 
+w2 = 0.001042*(v_speed*3.6) + 0.003750;
 
 % vector containing signals from each vehicle's axles
 w_signal = zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty),t_size);
