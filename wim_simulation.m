@@ -1,7 +1,9 @@
 clc
 close all
 clear
+rng('shuffle')                                  % generate new seed for rand function
 
+%% Configurations
 config = jsondecode(fileread('config.json'));   % config file
 
 v_speeds = config.vehicle_speed./3.6;           % vehicle speed (km/h -> m/s) 
@@ -18,40 +20,47 @@ for i = 1:s_qtty
     s_pos(1,i) = i * s_dist;    % TODO: s_pos starting on zero? now it aint
 end
 
-%% Weight signal parameters
-w_time_end = s_pos(end)/v_speed;    % time to the vehicle travel through all sensors
-w_time_end = w_time_end + 0.1;      % adding time as a margin
+%% Vehicle load signal parameters
+w_time_end = s_pos(end)/v_speed;    % time that the vehicle travel through all sensors
+w_time_end = w_time_end + 0.1;      % adding some time as a margin
 
-w_time_res = 0.001;                           % time resolution (seconds)
+w_time_res = 0.001;                             % time resolution (seconds)
 t = (0:w_time_res:w_time_end-w_time_res);       % time vector
 t_size = size(t,2);                             % time vector size
 
-% f1 and f2 range (Hz)
+% dynamic load frequencies range (Hz)
 f1_min = 1;               
 f1_max = 5;
 f2_min = 8;
 f2_max = 15;
 
-% TODO: amplitude should to depend on vehicle speed
-w_f1_amp = 1;     	% first dynamic load amplitude (Kg)    
-w_f2_amp = 0.5;     % second dynamic load amplitude (Kg) 
+% dynamic load amplitudes (tons) TODO: should depend on vehicle speed
+w1 = 1;   
+w2 = 0.5; 
 
 % vector containing signals from each vehicle's axles
 w_signal = zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty),t_size);
 
 for i = 1:n_sim
     for j = 1:v_qtty
-        w_f1 = (rand(1)*(f1_max-f1_min)) + f1_min;    % TODO: seed deve ser sempre aleatório
-        w_f2 = (rand(1)*(f2_max-f2_min)) + f2_min;    % TODO: seed deve ser sempre aleatório
-        w_phase = (rand(1)*(2*pi-0)) + 0;                   % TODO: seed deve ser sempre aleatório
+        f1 = (rand(1)*(f1_max-f1_min)) + f1_min;
+        f2 = (rand(1)*(f2_max-f2_min)) + f2_min;
+        phase = (rand(1)*(2*pi-0)) + 0;
 
         axle_qtty = config.vehicles(j).axle_qtty;
-        
         for k = 1:axle_qtty
-            w_signal_axle = config.vehicles(j).axle_st_load(k) + w_f1_amp*sin(2*pi*w_f1*t + w_phase) + w_f2_amp*sin(2*pi*w_f2*t + w_phase);
+            if k == 1
+                w_signal_axle = config.vehicles(j).axle_st_load(k) + w1*sin(2*pi*f1*t + phase) + w2*sin(2*pi*f2*t + phase);
+            else
+                deltaD = abs(config.vehicles(j).axle_dist(k) - config.vehicles(j).axle_dist(k-1));
+                deltaT = deltaD / v_speed;
+                shift1 = 2*pi*f1*deltaT;
+                shift2 = 2*pi*f2*deltaT;
+                w_signal_axle = config.vehicles(j).axle_st_load(k) + w1*sin(2*pi*f1*t + phase + shift1) + w2*sin(2*pi*f2*t + phase + shift2);
+            end
             w_signal(i, j, k, :) = w_signal_axle;
-            %plot(w_signal_axle)
-            %hold on
+            plot(t,w_signal_axle)
+            hold on
         end
     end
 end
@@ -90,8 +99,10 @@ for i = 1:n_sim
     for j = 1:v_qtty
         for k = 1:config.vehicles(j).axle_qtty
             for l = 1:s_qtty
-                % TODO: add time offset between axles
                 s_w_signal(i,j,k,l) = w_signal(i, j, k, s_idx_ini(l));
+                
+                %stem(s_idx_ini(l),s_w_signal(i,j,k,l));
+                %hold on
             end
             
             % Gross vehicle weight
