@@ -4,13 +4,14 @@ clear
 rng('shuffle')                                  % generate new seed for rand function
 
 %% Configurations
-config = jsondecode(fileread('config.json'));   % config file
+config = jsondecode(fileread('config.json'));	% config file
 
 v_speeds = config.vehicle_speed./3.6;           % vehicle speed (km/h -> m/s) 
-v_qtty = length(config.vehicles);
-s_qtty = config.sensor_qtty;                    % number of sensors
-s_dist = config.sensor_distance;                % distance between sensors (meters)
-n_sim = config.number_of_runs;                  % number of simulations 
+v_qtty   = length(config.vehicles);
+s_qtty   = config.sensor_qtty;                  % number of sensors
+s_dist   = config.sensor_distance;              % distance between sensors (meters)
+s_rsd    = config.sensor_rsd;                   % sensors' relative standard deviation
+n_sim    = config.number_of_runs;               % number of simulations 
 
 for v_speed = v_speeds(:).'    
     
@@ -64,7 +65,7 @@ for i = 1:n_sim
             end
             w_signal(i, j, k, :) = w_signal_axle;
             
-            % Plot axle signal
+            % plot axle signal
             %plot(t,w_signal_axle);
             %hold on
         end
@@ -88,11 +89,10 @@ end
 
 % sensor signal
 s_w_signal = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty), s_qtty);
+teste = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty), s_qtty);
 
-% mean value estimator
+% estimators
 axle_mean   = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
-
-% signal reconstruction estimators
 axle_sr_linear  = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
 axle_sr_pchip   = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
 axle_sr_v5cubic = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
@@ -110,10 +110,17 @@ for i = 1:n_sim
     for j = 1:v_qtty
         for k = 1:config.vehicles(j).axle_qtty
             for l = 1:s_qtty
+                sample = w_signal(i, j, k, s_idx_ini(l));
+                current_std = sample * s_rsd(l);
+                
+                % apply normally distributed noise using the current standard deviation
+                teste(i,j,k,l) = normrnd(sample, current_std); % TODO: Use this as sensor sample
                 s_w_signal(i,j,k,l) = w_signal(i, j, k, s_idx_ini(l));
                 
-                % Plot sensor samples
+                % plot sensor samples
                 %stem(s_time(l),s_w_signal(i,j,k,l));
+                %hold on
+                %stem(s_time(l),teste(i,j,k,l));
                 %hold on
             end
             
