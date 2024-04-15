@@ -60,9 +60,6 @@ for i = 1:n_sim
             else
                 deltaD = abs(config.vehicles(j).axle_dist(k) - config.vehicles(j).axle_dist(k-1));
                 deltaT = deltaD / v_speed;
-                %shift1 = 2*pi*f1*deltaT;
-                %shift2 = 2*pi*f2*deltaT;
-                %w_signal_axle = st_load*(1 + w1*sin(2*pi*f1*t + phase + shift1) + w2*sin(2*pi*f2*t + phase + shift2));
                 w_signal_axle = st_load*(1 + w1*sin(2*pi*f1*(t-deltaT) + phase) + w2*sin(2*pi*f2*(t-deltaT) + phase));
             end
             w_signal(i, j, k, :) = w_signal_axle;
