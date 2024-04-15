@@ -60,13 +60,16 @@ for i = 1:n_sim
             else
                 deltaD = abs(config.vehicles(j).axle_dist(k) - config.vehicles(j).axle_dist(k-1));
                 deltaT = deltaD / v_speed;
-                shift1 = 2*pi*f1*deltaT;
-                shift2 = 2*pi*f2*deltaT;
-                w_signal_axle = st_load*(1 + w1*sin(2*pi*f1*t + phase + shift1) + w2*sin(2*pi*f2*t + phase + shift2));
+                %shift1 = 2*pi*f1*deltaT;
+                %shift2 = 2*pi*f2*deltaT;
+                %w_signal_axle = st_load*(1 + w1*sin(2*pi*f1*t + phase + shift1) + w2*sin(2*pi*f2*t + phase + shift2));
+                w_signal_axle = st_load*(1 + w1*sin(2*pi*f1*(t-deltaT) + phase) + w2*sin(2*pi*f2*(t-deltaT) + phase));
             end
             w_signal(i, j, k, :) = w_signal_axle;
-            plot(t,w_signal_axle)
-            hold on
+            
+            % Plot axle signal
+            %plot(t,w_signal_axle);
+            %hold on
         end
     end
 end
@@ -112,7 +115,8 @@ for i = 1:n_sim
             for l = 1:s_qtty
                 s_w_signal(i,j,k,l) = w_signal(i, j, k, s_idx_ini(l));
                 
-                %stem(s_idx_ini(l),s_w_signal(i,j,k,l));
+                % Plot sensor samples
+                %stem(s_time(l),s_w_signal(i,j,k,l));
                 %hold on
             end
             
@@ -177,6 +181,14 @@ for i = 1:n_sim
         %err_gvw_mv(i,j) = (v_gvw(i,j) - v_static_gvw(j)) * 100 / v_static_gvw(j);
     end
 end
+
+%% Terminal output
+STR = ['Speed = ',num2str(v_speed),' m/s, Static load'];
+disp(STR)
+STR = ['f1 = ',num2str(f1),' Hz, A1 = ',num2str(st_load * w1),' Kg'];
+disp(STR)
+STR = ['f2 = ',num2str(f2),' Hz, A2 = ',num2str(st_load * w2),' Kg'];
+disp(STR)
 
 %% CSV output
 
