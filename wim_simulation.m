@@ -91,23 +91,28 @@ end
 s_w_signal = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty), s_qtty);
 
 % estimators
-axle_mean   = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
+axle_mean       = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
+axle_MLE        = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
 axle_sr_linear  = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
 axle_sr_pchip   = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
 axle_sr_v5cubic = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
 axle_sr_makima  = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
 axle_sr_spline  = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
 
-gvw_mean = zeros(n_sim, v_qtty);
-gvw_sr_linear = zeros(n_sim, v_qtty);
-gvw_sr_pchip = zeros(n_sim, v_qtty);
-gvw_sr_v5cubic = zeros(n_sim, v_qtty);
-gvw_sr_makima = zeros(n_sim, v_qtty);
-gvw_sr_spline = zeros(n_sim, v_qtty);
+gvw_mean        = zeros(n_sim, v_qtty);
+gvw_MLE         = zeros(n_sim, v_qtty); 
+gvw_sr_linear   = zeros(n_sim, v_qtty);
+gvw_sr_pchip    = zeros(n_sim, v_qtty);
+gvw_sr_v5cubic  = zeros(n_sim, v_qtty);
+gvw_sr_makima   = zeros(n_sim, v_qtty);
+gvw_sr_spline   = zeros(n_sim, v_qtty);
 
 for i = 1:n_sim
     for j = 1:v_qtty
         for k = 1:config.vehicles(j).axle_qtty
+            numer_MLE = 0;
+            denom_MLE = 0;
+            
             for l = 1:s_qtty
                 sample = w_signal(i, j, k, s_idx_ini(l));
                 current_std = sample * s_rsd(l);
@@ -116,16 +121,24 @@ for i = 1:n_sim
                 % apply normally distributed noise using the current standard deviation
                 s_w_signal(i,j,k,l) = normrnd(sample, current_std);
                 
+                % MLE computation
+                numer_MLE = numer_MLE + (s_w_signal(i,j,k,l)/current_var);
+                denom_MLE = denom_MLE + (1/current_var);
+                
                 % plot sensor samples
                 stem(s_time(l),s_w_signal(i,j,k,l));
                 hold on
             end
             
-            % Mean value
+            % mean value
             axle_mean(i,j,k) = mean(s_w_signal(i,j,k,:));
             gvw_mean(i,j) = gvw_mean(i,j) + axle_mean(i,j,k);
+            
+            % MLE
+            axle_MLE(i,j,k) = numer_MLE / denom_MLE;
+            gvw_MLE(i,j) = gvw_MLE(i,j) + axle_MLE(i,j,k);
                 
-            % Signal reconstruction
+            % signal reconstruction
             signal_2d = reshape(s_w_signal(i, j, k, :), 1, []);
             
             x = interp1(s_time,signal_2d,t,'linear');
@@ -153,6 +166,7 @@ end
 
 %% Outputs
 
+% static gvw
 v_static_gvw = zeros(v_qtty);
 for i = 1:v_qtty
     for j = 1:config.vehicles(i).axle_qtty
@@ -160,18 +174,28 @@ for i = 1:v_qtty
     end
 end
 
-%err_gvw_mv = zeros(n_sim,v_qtty);
-
 err_axl_mv      = zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty));
+err_axl_MLE   	= zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty));
 err_axl_linear  = zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty));
 err_axl_pchip   = zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty));
 err_axl_v5cubic = zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty));
 err_axl_makima  = zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty));
 err_axl_spline  = zeros(n_sim,v_qtty,max(config.vehicles.axle_qtty));
+
+err_gvw_mv      = zeros(n_sim,v_qtty);
+err_gvw_MLE   	= zeros(n_sim,v_qtty);
+err_gvw_linear  = zeros(n_sim,v_qtty);
+err_gvw_pchip   = zeros(n_sim,v_qtty);
+err_gvw_v5cubic = zeros(n_sim,v_qtty);
+err_gvw_makima  = zeros(n_sim,v_qtty);
+err_gvw_spline  = zeros(n_sim,v_qtty);
+
 for i = 1:n_sim
     for j = 1:v_qtty
         for k = 1:config.vehicles(j).axle_qtty
-            err_axl_mv(i,j,k)      = (axle_mean(i,j,k)   - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
+            % axle error
+            err_axl_mv(i,j,k)      = (axle_mean(i,j,k)       - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
+            err_axl_MLE(i,j,k)     = (axle_MLE(i,j,k)        - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
             
             err_axl_linear(i,j,k)  = (axle_sr_linear(i,j,k)  - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
             err_axl_pchip(i,j,k)   = (axle_sr_pchip(i,j,k)   - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
@@ -179,7 +203,15 @@ for i = 1:n_sim
             err_axl_makima(i,j,k)  = (axle_sr_makima(i,j,k)  - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
             err_axl_spline(i,j,k)  = (axle_sr_spline(i,j,k)  - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
         end
-        %err_gvw_mv(i,j) = (v_gvw(i,j) - v_static_gvw(j)) * 100 / v_static_gvw(j);
+        
+        % gvw error
+        err_gvw_mv(i,j)      = (gvw_mean(i,j)       - v_static_gvw(j)) * 100 / v_static_gvw(j);
+        err_gvw_MLE(i,j)     = (gvw_MLE(i,j)        - v_static_gvw(j)) * 100 / v_static_gvw(j);
+        err_gvw_linear(i,j)  = (gvw_sr_linear(i,j)  - v_static_gvw(j)) * 100 / v_static_gvw(j);
+        err_gvw_pchip(i,j)   = (gvw_sr_pchip(i,j)   - v_static_gvw(j)) * 100 / v_static_gvw(j);
+        err_gvw_v5cubic(i,j) = (gvw_sr_v5cubic(i,j) - v_static_gvw(j)) * 100 / v_static_gvw(j);
+        err_gvw_makima(i,j)  = (gvw_sr_makima(i,j)  - v_static_gvw(j)) * 100 / v_static_gvw(j);
+        err_gvw_spline(i,j)  = (gvw_sr_spline(i,j)  - v_static_gvw(j)) * 100 / v_static_gvw(j);
     end
 end
 
@@ -217,5 +249,3 @@ for i = 1:n_sim
     end
 end
 fclose(csvFile);
-
-return
