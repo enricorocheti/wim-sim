@@ -1,42 +1,52 @@
-clear all
-close all
 clc
+close all
+clear
 
-fa  = 100;          % freq. de amostragem
-dt  = 1/fa;          % discretização no tempo
-t   = [0:dt:1-dt];   % vetor tempo
+% Load data from CSV
+data = csvread('20km_20k_1.csv');
 
-M = csvread('teste.csv')
-M(:,1) = []
+% Normalize the data
+data(:,1) = data(:,1) - min(data(:,1));
+data(:,2) = data(:,2) - min(data(:,2));
 
-figure(1);
-t = M(:,1); % tempo
-p = M(:,2); % pressão da roda sobre o sensor
-t = t(15000:32000);
-p = p(15000:32000);
-plot(t,p);
+% Plot the normalized data
+figure;
+subplot(2,1,1);
+plot(data(:,1));
+title('Normalized Left Axle');
+hold on; % Hold on to plot peaks on the same graph
 
-N = size(p);
-N(:,2) = [];
-%P = fft(p.*hanning(N)')/N;
+% Calculate and highlight peaks for Left Axle
+[pks_L, locs_L] = findpeaks(data(:,1), 'MinPeakHeight', 3*std(data(:,1)));
+plot(locs_L, pks_L, 'vr'); % Plotting peaks in red 'v'
 
-Ts = 0.05;
-Fs = 1/Ts;
-[y, Ty] = resample(p,t,Fs);
-lowpass(y,0.5,Fs)
+subplot(2,1,2);
+plot(data(:,2));
+title('Normalized Right Axle');
+hold on; % Hold on to plot peaks on the same graph
+
+% Calculate and highlight peaks for Right Axle
+[pks_R, locs_R] = findpeaks(data(:,2), 'MinPeakHeight', 3*std(data(:,2)));
+plot(locs_R, pks_R, 'vg'); % Plotting peaks in green 'v'
 
 return
 
-dt = (t(end)-t(1))/N;
-df = 1/N/dt;
-f = 0:df:(N-1)*df
-%Xp = P(1:(size(p)/2));
-%Xp(2:end-1) = 2*Xp(2:end-1);
-%figure(2);
-%plot(abs(Xp));
+% Calculating the area under each peak
+area_L = zeros(length(locs_L),1);
+area_R = zeros(length(locs_R),1);
+window = 50; % Adjust as necessary for peak width
+for i = 1:length(locs_L)
+    start_idx = max(1, locs_L(i) - window);
+    end_idx = min(length(data(:,1)), locs_L(i) + window);
+    area_L(i) = trapz(data(start_idx:end_idx, 1));
+end
+for i = 1:length(locs_R)
+    start_idx = max(1, locs_R(i) - window);
+    end_idx = min(length(data(:,2)), locs_R(i) + window);
+    area_R(i) = trapz(data(start_idx:end_idx, 2));
+end
 
-figure(2);
-%plot(f(1:N/2),abs(P(1:N/2)));
-title('Espectro original do sinal');
-xlabel('f [Hz]');
-    
+disp('Areas under peaks for Left Axle:');
+disp(area_L);
+disp('Areas under peaks for Right Axle:');
+disp(area_R);
