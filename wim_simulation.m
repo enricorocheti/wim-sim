@@ -66,8 +66,8 @@ for i = 1:n_sim
             w_signal(i, j, k, :) = w_signal_axle;
             
             % plot axle signal
-            %plot(t,w_signal_axle);
-            %hold on
+            plot(t,w_signal_axle);
+            hold on
         end
     end
 end
@@ -89,7 +89,6 @@ end
 
 % sensor signal
 s_w_signal = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty), s_qtty);
-teste = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty), s_qtty);
 
 % estimators
 axle_mean   = zeros(n_sim, v_qtty, max(config.vehicles.axle_qtty));
@@ -112,16 +111,14 @@ for i = 1:n_sim
             for l = 1:s_qtty
                 sample = w_signal(i, j, k, s_idx_ini(l));
                 current_std = sample * s_rsd(l);
+                current_var = current_std^2;
                 
                 % apply normally distributed noise using the current standard deviation
-                teste(i,j,k,l) = normrnd(sample, current_std); % TODO: Use this as sensor sample
-                s_w_signal(i,j,k,l) = w_signal(i, j, k, s_idx_ini(l));
+                s_w_signal(i,j,k,l) = normrnd(sample, current_std);
                 
                 % plot sensor samples
-                %stem(s_time(l),s_w_signal(i,j,k,l));
-                %hold on
-                %stem(s_time(l),teste(i,j,k,l));
-                %hold on
+                stem(s_time(l),s_w_signal(i,j,k,l));
+                hold on
             end
             
             % Mean value
