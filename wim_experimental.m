@@ -2,6 +2,8 @@ clc
 close all
 clear
 
+%% Configurations
+
 % Load data from CSV
 data = csvread('20km_20k_1.csv');
 
@@ -9,37 +11,37 @@ data = csvread('20km_20k_1.csv');
 data(:,1) = data(:,1) - min(data(:,1));
 data(:,2) = data(:,2) - min(data(:,2));
 
-% Plot the normalized data
+%% Peak value
+
+% Left axle
 figure;
 subplot(2,1,1);
 plot(data(:,1));
 title('Normalized Left Axle');
-hold on; % Hold on to plot peaks on the same graph
+hold on;
 
-% Calculate and highlight peaks for Left Axle
 [pks_L, locs_L] = findpeaks(data(:,1), 'MinPeakHeight', 3*std(data(:,1)));
-plot(locs_L, pks_L, 'vr'); % Plotting peaks in red 'v'
+plot(locs_L, pks_L, 'vr');
 
+% Right axle
 subplot(2,1,2);
 plot(data(:,2));
 title('Normalized Right Axle');
-hold on; % Hold on to plot peaks on the same graph
-
-% Calculate and highlight peaks for Right Axle
+hold on
 [pks_R, locs_R] = findpeaks(data(:,2), 'MinPeakHeight', 3*std(data(:,2)));
-plot(locs_R, pks_R, 'vg'); % Plotting peaks in green 'v'
+plot(locs_R, pks_R, 'vg');
 
-return
-
-% Calculating the area under each peak
+%% Area under the signal
 area_L = zeros(length(locs_L),1);
 area_R = zeros(length(locs_R),1);
-window = 50; % Adjust as necessary for peak width
+window = 50;
+
 for i = 1:length(locs_L)
     start_idx = max(1, locs_L(i) - window);
     end_idx = min(length(data(:,1)), locs_L(i) + window);
     area_L(i) = trapz(data(start_idx:end_idx, 1));
 end
+
 for i = 1:length(locs_R)
     start_idx = max(1, locs_R(i) - window);
     end_idx = min(length(data(:,2)), locs_R(i) + window);
@@ -47,6 +49,13 @@ for i = 1:length(locs_R)
 end
 
 disp('Areas under peaks for Left Axle:');
-disp(area_L);
+disp(sum(area_L));
 disp('Areas under peaks for Right Axle:');
-disp(area_R);
+disp(sum(area_R));
+
+%% Re-sampling of area
+% TODO
+
+%% Footprint reconstruction
+% TODO
+
