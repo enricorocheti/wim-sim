@@ -1,7 +1,7 @@
 clc
 close all
 clear
-rng('shuffle')                                  % generate new seed for rand function
+rng(10)                                         % fix seed for rand function
 
 %% Configurations
 config = jsondecode(fileread('config.json'));	% config file
@@ -18,7 +18,7 @@ for v_speed = v_speeds(:).'
 %% System parameters and layout
 s_pos = zeros(1,s_qtty);        % sensor position (meters)
 for i = 1:s_qtty
-    s_pos(1,i) = i * s_dist;    % TODO: s_pos starting on zero? now it aint
+    s_pos(1,i) = i * s_dist;    % TODO: s_pos starting on zero? now it's not
 end
 
 % f1 = (5 - 1)/2 = 3 Hz
@@ -27,14 +27,14 @@ s_design_1 = 2*(s_qtty - 1)*v_speed/(3*s_qtty^2);
 s_design_2 = (v_speed/(2*s_qtty))*(1/3 + (s_qtty-1)/11.5);
 
 %% Vehicle load signal parameters
-w_time_end = s_pos(end)/v_speed;    % time that the vehicle travel through all sensors
-w_time_end = w_time_end + 0.1;      % adding some time as a margin
+w_time_end = s_pos(end)/v_speed;                % time that the vehicle travel through all sensors
+w_time_end = w_time_end + 0.1;                  % adding some time as a margin
 
 w_time_res = 0.001;                             % time resolution (seconds)
 t = (0:w_time_res:w_time_end-w_time_res);       % time vector
 t_size = size(t,2);                             % time vector size
 
-% dynamic load frequencies range (Hz)
+% dynamic loads frequencies range (Hz)
 f1_min = 1;               
 f1_max = 5;
 f2_min = 8;
@@ -194,14 +194,6 @@ for i = 1:n_sim
         err_gvw_spline(i,j)  = (gvw_sr_spline(i,j)  - v_static_gvw(j)) * 100 / v_static_gvw(j);
     end
 end
-
-%% Terminal output
-STR = ['Speed = ',num2str(v_speed),' m/s, Static load'];
-disp(STR)
-STR = ['f1 = ',num2str(f1),' Hz, A1 = ',num2str(st_load * w1),' Kg'];
-disp(STR)
-STR = ['f2 = ',num2str(f2),' Hz, A2 = ',num2str(st_load * w2),' Kg'];
-disp(STR)
 
 %% CSV output
 % axle estimation statistics
