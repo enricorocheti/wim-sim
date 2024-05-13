@@ -202,21 +202,17 @@ csvName = ['outputs/axle_output_s',num2str(s_qtty),'_n',num2str(n_sim),'.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
-    fprintf(csvFile, 'mean_mv,max_mv,std_mv,');
-    fprintf(csvFile, 'mean_MLE,max_MLE,std_MLE,');
-    fprintf(csvFile, 'mean_pchip,max_pchip,std_pchip,');
-    fprintf(csvFile, 'mean_makima,max_makima,std_makima,');
-    fprintf(csvFile, 'mean_spline,max_spline,std_spline\n');
+    fprintf(csvFile, 'mean_mv,mean_MLE,mean_pchip,mean_makima,mean_spline,');
+    fprintf(csvFile, 'max_mv,max_MLE,max_pchip,max_makima,max_spline,');
+    fprintf(csvFile, 'std_mv,std_MLE,std_pchip,std_makima,std_spline\n');
 else
     csvFile = fopen(csvName, 'a');
 end
 
 fprintf(csvFile, '%.0f,', v_speed * 3.6);
-fprintf(csvFile, '%.3f,%.3f,%.3f,', mean(err_axl_mv(:)),max(abs(err_axl_mv(:))),std(err_axl_mv(:)));
-fprintf(csvFile, '%.3f,%.3f,%.3f,', mean(err_axl_MLE(:)),max(abs(err_axl_MLE(:))),std(err_axl_MLE(:)));
-fprintf(csvFile, '%.3f,%.3f,%.3f,', mean(err_axl_pchip(:)),max(abs(err_axl_pchip(:))),std(err_axl_pchip(:)));
-fprintf(csvFile, '%.3f,%.3f,%.3f,', mean(err_axl_makima(:)),max(abs(err_axl_makima(:))),std(err_axl_makima(:)));
-fprintf(csvFile, '%.3f,%.3f,%.3f\n', mean(err_axl_spline(:)),max(abs(err_axl_spline(:))),std(err_axl_spline(:)));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', mean(err_axl_mv(:)), mean(err_axl_MLE(:)), mean(err_axl_pchip(:)), mean(err_axl_makima(:)), mean(err_axl_spline(:)));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', max(abs(err_axl_mv(:))), max(abs(err_axl_MLE(:))), max(abs(err_axl_pchip(:))), max(abs(err_axl_makima(:))), max(abs(err_axl_spline(:))));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f\n', std(err_axl_mv(:)), std(err_axl_MLE(:)), std(err_axl_pchip(:)), std(err_axl_makima(:)), std(err_axl_spline(:)));
 fclose(csvFile);
 
 % GVW estimation statistics
@@ -224,21 +220,17 @@ csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_n',num2str(n_sim),'.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
-    fprintf(csvFile, 'mean_mv,max_mv,std_mv,');
-    fprintf(csvFile, 'mean_MLE,max_MLE,std_MLE,');
-    fprintf(csvFile, 'mean_pchip,max_pchip,std_pchip,');
-    fprintf(csvFile, 'mean_makima,max_makima,std_makima,');
-    fprintf(csvFile, 'mean_spline,max_spline,std_spline\n');
+    fprintf(csvFile, 'mean_mv,mean_MLE,mean_pchip,mean_makima,mean_spline,');
+    fprintf(csvFile, 'max_mv,max_MLE,max_pchip,max_makima,max_spline,');
+    fprintf(csvFile, 'std_mv,std_MLE,std_pchip,std_makima,std_spline\n');
 else
     csvFile = fopen(csvName, 'a');
 end
 
 fprintf(csvFile, '%.0f,', v_speed * 3.6);
-fprintf(csvFile, '%.3f,%.3f,%.3f,', mean(err_gvw_mv(:)),max(abs(err_gvw_mv(:))),std(err_gvw_mv(:)));
-fprintf(csvFile, '%.3f,%.3f,%.3f,', mean(err_gvw_MLE(:)),max(abs(err_gvw_MLE(:))),std(err_gvw_MLE(:)));
-fprintf(csvFile, '%.3f,%.3f,%.3f,', mean(err_gvw_pchip(:)),max(abs(err_gvw_pchip(:))),std(err_gvw_pchip(:)));
-fprintf(csvFile, '%.3f,%.3f,%.3f,', mean(err_gvw_makima(:)),max(abs(err_gvw_makima(:))),std(err_gvw_makima(:)));
-fprintf(csvFile, '%.3f,%.3f,%.3f\n', mean(err_gvw_spline(:)),max(abs(err_gvw_spline(:))),std(err_gvw_spline(:)));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', mean(err_gvw_mv(:)), mean(err_gvw_MLE(:)), mean(err_gvw_pchip(:)), mean(err_gvw_makima(:)), mean(err_gvw_spline(:)));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', max(abs(err_gvw_mv(:))), max(abs(err_gvw_MLE(:))), max(abs(err_gvw_pchip(:))), max(abs(err_gvw_makima(:))), max(abs(err_gvw_spline(:))));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f\n', std(err_gvw_mv(:)), std(err_gvw_MLE(:)), std(err_gvw_pchip(:)), std(err_gvw_makima(:)), std(err_gvw_spline(:)));
 fclose(csvFile);
 
 end
