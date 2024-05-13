@@ -1,14 +1,24 @@
 {
-    "vehicle_speed": [36],
+    "vehicle_speed": [72],
 	"vehicles": [
         {
-            "axle_qtty": 2,
-            "axle_dist": [0, 1],
-            "axle_st_load": [100, 200]
+            "axle_qtty": 3,
+            "axle_dist": [0, 3, 1.5],
+            "axle_st_load": [6000, 6750, 6750]
+        },
+        {
+            "axle_qtty": 5,
+            "axle_dist": [0, 3, 4, 1.5, 1.5],
+            "axle_st_load": [6000, 10000, 8500, 8500, 8500]
+        },
+        {
+            "axle_qtty": 7,
+            "axle_dist": [0, 3, 1.5, 3, 1.5, 3, 1.5],
+            "axle_st_load": [6000, 6750, 6750, 8500, 8500, 8500, 8500]
         }
     ],
-    "sensor_qtty": 2,
-    "sensor_distance": 1.5,
-    "sensor_rsd": [0.05, 0.25],
-    "number_of_runs": 1
+    "sensor_qtty": 10,
+    "sensor_distance": 2,
+    "sensor_rsd": [0.06, 0.13, 0.42, 0.51, 0.05, 0.06, 0.10, 0.11, 0.09, 0.11, 0.11, 0.17, 0.08, 0.18, 0.09, 0.06],
+    "number_of_runs": 10000
 }
