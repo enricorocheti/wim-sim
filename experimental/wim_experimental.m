@@ -4,6 +4,10 @@ clear;
 
 %% Configurations
 
+% Static configurations
+vehicle_axles = 3;
+vehicle_passes = 3;
+
 % Load data from CSV
 file = 'csv/25khz/40km_25k (1).csv';
 data = csvread(file);
@@ -50,55 +54,36 @@ hold off;
 
 %% Instantaneous Axle Weight Algorithms
 
-peak_left = zeros(1, length(pulse_start_l));
-peak_right = zeros(1, length(pulse_start_r));
+result_peak = zeros(1, vehicle_axles);
+result_area = zeros(1, vehicle_axles);
 
-area_left = zeros(1, length(pulse_start_l));
-area_right = zeros(1, length(pulse_start_r));
-
-for i = 1:length(pulse_start_l)
-    pulse_data = data(pulse_start_l(i):pulse_end_l(i), 1);
+for i = 1:vehicle_axles
+    pulse_data_left = data(pulse_start_l(i):pulse_end_l(i), 1);
+    pulse_data_right = data(pulse_start_r(i):pulse_end_r(i), 2);
     
     % Peak value
-    peak_left(i) = max(pulse_data);
+    result_peak(i) = max(pulse_data_left) + max(pulse_data_right);
     
     % Area under the curve
-    area_left(i) = trapz(pulse_data);
-    
-    % Re-sampling of area (TODO)
-end
-
-for i = 1:length(pulse_start_r)
-    pulse_data = data(pulse_start_r(i):pulse_end_r(i), 2);
-    
-    % Peak value
-    peak_right(i) = max(pulse_data); % Find the peak value
-    
-    % Area under the curve
-    area_right(i) = trapz(pulse_data); % Calculate the area under the curve
+    result_area(i) = trapz(pulse_data_left) + trapz(pulse_data_right);
     
     % Re-sampling of area (TODO)
 end
 
 %% Display Results
-STR = ['Left axle peak: ', num2str(peak_left)];
+STR = ['Peak result: ', num2str(result_peak)];
 disp(STR);
-STR = ['Right axle peak: ', num2str(peak_right)];
-disp(STR);
-
-STR = ['Left axle area: ', num2str(area_left)];
-disp(STR);
-STR = ['Right axle area: ', num2str(area_right)];
+STR = ['Area result: ', num2str(result_area)];
 disp(STR);
 
-csvName = ['outputs/results.csv'];
+csvName = ['outputs/results2.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');
-    fprintf(csvFile, 'axle,peak_left,peak_right,area_left,area_right\n');
+    fprintf(csvFile, 'axle,peak,area\n');
 else
     csvFile = fopen(csvName, 'a');
 end
 
-for i = 1:3
-    fprintf(csvFile, '%d,%.3f,%.3f,%.3f,%.3f\n', i, peak_left(i), peak_right(i), area_left(i), area_right(i));
+for i = 1:vehicle_axles
+    fprintf(csvFile, '%d,%.3f,%.3f\n', i, result_peak(i), result_area(i));
 end
