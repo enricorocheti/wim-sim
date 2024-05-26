@@ -9,12 +9,23 @@ vehicle_axles = 3;
 vehicle_passes = 3;
 
 for Fs = [12, 20, 25, 30]
+for speed = [5, 10, 15, 20, 30, 40]
 for k = 1:vehicle_passes
 
+if Fs == 12 && speed == 5 && k == 1
+    continue; % bad csv data
+end
+
+if Fs == 12 && speed == 10 && k == 2
+    continue; % bad csv data
+end
+
+if Fs == 25 && speed == 5 && k == 2
+    continue; % bad csv data
+end
+    
 % Load data from CSV
-%file = 'csv/25khz/40km_25k (1).csv';
-%file = ['csv/',num2str(i),'khz/',num2str(j),'kmh_',num2str(i),'k (',num2str(k),').csv'];
-file = ['csv/',num2str(Fs),'khz/40km_',num2str(Fs),'k (',num2str(k),').csv'];
+file = ['csv/',num2str(Fs),'khz/',num2str(speed),'km_',num2str(Fs),'k (',num2str(k),').csv'];
 %disp(file);
 data = csvread(file);
 
@@ -54,9 +65,9 @@ pulse_end_r   = find(diff(data(:,2) > threshold_r) == -1);
 % hold on;
 % plot([1 length(data(:,2))], [threshold_r threshold_r], 'r--');
 % hold off;
-
-%figure(2);
-%plot(data(pulse_start_l(2):pulse_end_l(2),1));
+% 
+% figure(2);
+% plot(data(pulse_start_l(2):pulse_end_l(2),1));
 
 %% Instantaneous Axle Weight Algorithms
 
@@ -74,6 +85,9 @@ for i = 1:vehicle_axles
     result_area(i) = trapz(pulse_data_left) + trapz(pulse_data_right);
     
     % Re-sampling of area (TODO)
+    
+    % Footprint reconstruction (TODO)
+    
 end
 
 %% Errors and statistics
@@ -103,18 +117,20 @@ disp(STR);
 STR = ['Area result: ', num2str(result_area)];
 disp(STR);
 
-csvName = ['outputs/results.csv'];
+csvName = ['outputs/results',num2str(speed),'.csv'];
+%csvName = ['outputs/results.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');
-    fprintf(csvFile, 'speed,fs,file_idx,axle,A1/A2_peak,A1/A3_peak,A2/A3_peak,A1/A2_area,A1/A3_area,A2/A3_area\n');
+    fprintf(csvFile, 'speed,fs,file_idx,A1/A2_peak,A1/A3_peak,A2/A3_peak,A1/A2_area,A1/A3_area,A2/A3_area\n');
 else
     csvFile = fopen(csvName, 'a');
 end
 
-fprintf(csvFile, '40,%dk,(%d),%d,', Fs, k, i);
+fprintf(csvFile, '%d,%dk,(%d),', speed, Fs, k);
 fprintf(csvFile, '%.3f,%.3f,%.3f,', err_A1_A2_peak, err_A1_A3_peak, err_A2_A3_peak);
 fprintf(csvFile, '%.3f,%.3f,%.3f\n', err_A1_A2_area, err_A1_A3_area, err_A2_A3_area);
 fclose(csvFile);
 
+end
 end
 end
