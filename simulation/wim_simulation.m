@@ -41,9 +41,10 @@ f1_max = 5;
 f2_min = 8;
 f2_max = 15;
 
-% dynamic load amplitudes (tons) based on vehicle speed linearization
-w1 = 0.004167*(v_speed*3.6) + 0.015000; 
-w2 = 0.001042*(v_speed*3.6) + 0.003750;
+% dynamic load amplitudes (in %) based on vehicle speed linearization
+w1 = 0.003833*(v_speed*3.6) - 0.04;      
+%w1 = 0.003357143*(v_speed*3.6) - 0.019285714; % REF_Z2
+w2 = w1/5;
 
 % vector containing signals from each vehicle's axles
 w_signal = zeros(n_sim,v_qtty,v_max_ax,t_size);
@@ -156,10 +157,23 @@ end
 %% Outputs
 
 % static gvw
-v_static_gvw = zeros(v_qtty);
+v_static_gvw = zeros(v_qtty,1);
 for i = 1:v_qtty
     for j = 1:config.vehicles(i).axle_qtty
         v_static_gvw(i) = v_static_gvw(i) + config.vehicles(i).axle_st_load(j);
+    end
+end
+
+% INMETRO
+err_syst = zeros(1,v_qtty);
+err_axl = zeros(v_qtty,v_max_ax);
+for i = 1:v_qtty
+    err_syst(i) = err_syst(i) + v_static_gvw(i)/mean(gvw_mean(:,i));  
+    
+    for j = 1:config.vehicles(i).axle_qtty
+        st_load = config.vehicles(i).axle_st_load(j);
+        corrected_axl = mean(axle_mean(:,i,j))*err_syst(i);
+        err_axl(i,j) = (st_load - corrected_axl)*100/corrected_axl;
     end
 end
 
@@ -195,6 +209,13 @@ for i = 1:n_sim
         err_gvw_spline(i,j)  = (gvw_sr_spline(i,j)  - v_static_gvw(j)) * 100 / v_static_gvw(j);
     end
 end
+
+% removing empty columns from arrays
+err_axl_mv = remove_empty_columns(err_axl_mv);
+err_axl_MLE = remove_empty_columns(err_axl_MLE);
+err_axl_pchip = remove_empty_columns(err_axl_pchip);
+err_axl_makima = remove_empty_columns(err_axl_makima);
+err_axl_spline = remove_empty_columns(err_axl_spline);
 
 %% CSV output
 % axle estimation statistics
@@ -233,4 +254,10 @@ fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', max(abs(err_gvw_mv(:))), max(abs(e
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f\n', std(err_gvw_mv(:)), std(err_gvw_MLE(:)), std(err_gvw_pchip(:)), std(err_gvw_makima(:)), std(err_gvw_spline(:)));
 fclose(csvFile);
 
+end
+
+% Remove empty columns
+function array = remove_empty_columns(array)
+	non_empty_columns = squeeze(any(array, 1));
+	array = array(:, non_empty_columns);
 end
