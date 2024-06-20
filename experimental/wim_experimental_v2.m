@@ -57,6 +57,8 @@ if option == 2 && (speed == 65 && k > 5)
     continue; % there is only 5 files in this speed
 end
 
+%% Signal Processing
+
 % Load data from CSV
 if option == 1
     file = ['csv/6_axle_truck/Vel_',num2str(speed),'km/',num2str(speed),'km (',num2str(k),').csv'];
@@ -256,7 +258,7 @@ for i = 1:vehicle_axles
     mean_resample(i) = mean(result_resample(:,i));
 end
 
-% Errors and statistics
+%% Errors and statistics
 A1_A2_static = A1_static/A2_static;
 A1_A3_static = A1_static/A3_static;
 A1_A4_static = A1_static/A4_static;
@@ -303,27 +305,26 @@ GVW_peak = mean_peak(1) + mean_peak(2) + mean_peak(3) + mean_peak(4) + mean_peak
 GVW_area = mean_area(1) + mean_area(2) + mean_area(3) + mean_area(4) + mean_area(5) + mean_area(6);
 GVW_resample = mean_resample(1) + mean_resample(2) + mean_resample(3) + mean_resample(4) + mean_resample(5) + mean_resample(6);
 
-% Results
+%% Results
 csvName = ['outputs/results_v2.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');
     fprintf(csvFile, 'speed,file_idx,');
-    fprintf(csvFile, 'A1/A2_peak,A1/A3_peak,A1/A4_peak,A1/A5_peak,A1/A6_peak,');
-    fprintf(csvFile, 'A1/A2_area,A1/A3_area,A1/A4_area,A1/A5_area,A1/A6_area,');
-    fprintf(csvFile, 'A1/A2_resample,A1/A3_resample,A1/A4_resample,A1/A5_resample,A1/A6_resample,');
+%     fprintf(csvFile, 'A1/A2_peak,A1/A3_peak,A1/A4_peak,A1/A5_peak,A1/A6_peak,');
+%     fprintf(csvFile, 'A1/A2_area,A1/A3_area,A1/A4_area,A1/A5_area,A1/A6_area,');
+%     fprintf(csvFile, 'A1/A2_resample,A1/A3_resample,A1/A4_resample,A1/A5_resample,A1/A6_resample,');
+    fprintf(csvFile, 'A1_peak,A2_peak,A3_peak,A4_peak,A5_peak,A6_peak,');
+    fprintf(csvFile, 'A1_area,A2_area,A3_area,A4_area,A5_area,A6_area,');
+    fprintf(csvFile, 'A1_resample,A2_resample,A3_resample,A4_resample,A5_resample,A6_resample,');
     fprintf(csvFile, 'GVW_peak,GVW_area,GVW_resample\n');
 else
     csvFile = fopen(csvName, 'a');
 end
 
-% fprintf(csvFile, '%d,(%d),', speed, k);
+fprintf(csvFile, '%d,(%d),', speed, k);
 % fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', err_A1_A2_peak, err_A1_A3_peak, err_A1_A4_peak, err_A1_A5_peak, err_A1_A6_peak);
 % fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', err_A1_A2_area, err_A1_A3_area, err_A1_A4_area, err_A1_A5_area, err_A1_A6_area);
 % fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', err_A1_A2_resample, err_A1_A3_resample, err_A1_A4_resample, err_A1_A5_resample, err_A1_A6_resample);
-% fprintf(csvFile, '%.3f,%.3f,%.3f\n', GVW_peak, GVW_area, GVW_resample);
-% fclose(csvFile);
-
-fprintf(csvFile, '%d,(%d),', speed, k);
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,',  mean_peak(1),  mean_peak(2),  mean_peak(3),  mean_peak(4),  mean_peak(5),  mean_peak(6));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,', mean_area(1), mean_area(2), mean_area(3), mean_area(4), mean_area(5), mean_area(6));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,', mean_resample(1), mean_resample(2), mean_resample(3), mean_resample(4), mean_resample(5), mean_resample(6));
