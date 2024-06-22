@@ -166,14 +166,15 @@ end
 
 % INMETRO
 % err_syst = zeros(1,v_qtty);
-% err_axl = zeros(v_qtty,v_max_ax);
+% err_axl = zeros(n_sim,v_qtty,v_max_ax);
 % for i = 1:v_qtty
-%     err_syst(i) = err_syst(i) + v_static_gvw(i)/mean(gvw_mean(:,i));  
-%     
+%     err_syst(i) = err_syst(i) + v_static_gvw(i)/mean(gvw_mean(:,i));
 %     for j = 1:config.vehicles(i).axle_qtty
 %         st_load = config.vehicles(i).axle_st_load(j);
 %         corrected_axl = mean(axle_mean(:,i,j))*err_syst(i);
-%         err_axl(i,j) = (st_load - corrected_axl)*100/corrected_axl;
+%         for k = 1:n_sim     
+%             err_axl(k,i,j) = (axle_mean(k,i,j) - corrected_axl)*100/corrected_axl;
+%         end
 %     end
 % end
 
