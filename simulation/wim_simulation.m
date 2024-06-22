@@ -1,7 +1,7 @@
 clc
 close all
 clear
-rng(10)                                         % fix seed for rand function
+rng(10)                                         % defines seed for rand function
 
 %% Configurations
 config = jsondecode(fileread('config.json'));	% config file
@@ -22,8 +22,8 @@ for i = 1:s_qtty
     s_pos(1,i) = i * s_dist;    % TODO: s_pos starting on zero? now it's not
 end
 
-% f1 = (5 - 1)/2 = 3 Hz
-% f2 = (15 - 8)/2 = 11.5 Hz
+% f1_mean = (5 - 1)/2  = 3 Hz
+% f2_mean = (15 - 8)/2 = 11.5 Hz
 s_design_1 = 2*(s_qtty - 1)*v_speed/(3*s_qtty^2);
 s_design_2 = (v_speed/(2*s_qtty))*(1/3 + (s_qtty-1)/11.5);
 
@@ -42,8 +42,8 @@ f2_min = 8;
 f2_max = 15;
 
 % dynamic load amplitudes (in %) based on vehicle speed linearization
-w1 = 0.003833*(v_speed*3.6) - 0.04;      
-%w1 = 0.003357143*(v_speed*3.6) - 0.019285714; % REF_Z2
+%w1 = 0.003833*(v_speed*3.6) - 0.04;      
+w1 = 0.003357143*(v_speed*3.6) - 0.019285714; % REF_Z2
 w2 = w1/5;
 
 % vector containing signals from each vehicle's axles
@@ -165,17 +165,17 @@ for i = 1:v_qtty
 end
 
 % INMETRO
-err_syst = zeros(1,v_qtty);
-err_axl = zeros(v_qtty,v_max_ax);
-for i = 1:v_qtty
-    err_syst(i) = err_syst(i) + v_static_gvw(i)/mean(gvw_mean(:,i));  
-    
-    for j = 1:config.vehicles(i).axle_qtty
-        st_load = config.vehicles(i).axle_st_load(j);
-        corrected_axl = mean(axle_mean(:,i,j))*err_syst(i);
-        err_axl(i,j) = (st_load - corrected_axl)*100/corrected_axl;
-    end
-end
+% err_syst = zeros(1,v_qtty);
+% err_axl = zeros(v_qtty,v_max_ax);
+% for i = 1:v_qtty
+%     err_syst(i) = err_syst(i) + v_static_gvw(i)/mean(gvw_mean(:,i));  
+%     
+%     for j = 1:config.vehicles(i).axle_qtty
+%         st_load = config.vehicles(i).axle_st_load(j);
+%         corrected_axl = mean(axle_mean(:,i,j))*err_syst(i);
+%         err_axl(i,j) = (st_load - corrected_axl)*100/corrected_axl;
+%     end
+% end
 
 err_axl_mv      = zeros(n_sim,v_qtty,v_max_ax);
 err_axl_MLE   	= zeros(n_sim,v_qtty,v_max_ax);
@@ -231,7 +231,7 @@ else
 end
 
 fprintf(csvFile, '%.0f,', v_speed * 3.6);
-fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', mean(err_axl_mv(:)), mean(err_axl_MLE(:)), mean(err_axl_pchip(:)), mean(err_axl_makima(:)), mean(err_axl_spline(:)));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', mean(abs(err_axl_mv(:))), mean(abs(err_axl_MLE(:))), mean(abs(err_axl_pchip(:))), mean(abs(err_axl_makima(:))), mean(abs(err_axl_spline(:))));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', max(abs(err_axl_mv(:))), max(abs(err_axl_MLE(:))), max(abs(err_axl_pchip(:))), max(abs(err_axl_makima(:))), max(abs(err_axl_spline(:))));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f\n', std(err_axl_mv(:)), std(err_axl_MLE(:)), std(err_axl_pchip(:)), std(err_axl_makima(:)), std(err_axl_spline(:)));
 fclose(csvFile);
@@ -249,7 +249,7 @@ else
 end
 
 fprintf(csvFile, '%.0f,', v_speed * 3.6);
-fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', mean(err_gvw_mv(:)), mean(err_gvw_MLE(:)), mean(err_gvw_pchip(:)), mean(err_gvw_makima(:)), mean(err_gvw_spline(:)));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', mean(abs(err_gvw_mv(:))), mean(abs(err_gvw_MLE(:))), mean(abs(err_gvw_pchip(:))), mean(abs(err_gvw_makima(:))), mean(abs(err_gvw_spline(:))));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', max(abs(err_gvw_mv(:))), max(abs(err_gvw_MLE(:))), max(abs(err_gvw_pchip(:))), max(abs(err_gvw_makima(:))), max(abs(err_gvw_spline(:))));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f\n', std(err_gvw_mv(:)), std(err_gvw_MLE(:)), std(err_gvw_pchip(:)), std(err_gvw_makima(:)), std(err_gvw_spline(:)));
 fclose(csvFile);
