@@ -17,15 +17,17 @@ v_max_ax = 7;                                 	% hard-coded value of the maximum
 for v_speed = v_speeds(:).'    
     
 %% System parameters and layout
-s_pos = zeros(1,s_qtty);        % sensor position (meters)
-for i = 1:s_qtty
-    s_pos(1,i) = i * s_dist;    % TODO: s_pos starting on zero? now it's not
-end
-
 % f1_mean = (5 - 1)/2  = 3 Hz
 % f2_mean = (15 - 8)/2 = 11.5 Hz
 s_design_1 = 2*(s_qtty - 1)*v_speed/(3*s_qtty^2);
 s_design_2 = (v_speed/(2*s_qtty))*(1/3 + (s_qtty-1)/11.5);
+
+%s_dist = s_design_2;
+
+s_pos = zeros(1,s_qtty);        
+for i = 1:s_qtty
+    s_pos(1,i) = i * s_dist;    % sensor position (meters)
+end
 
 %% Vehicle load signal parameters
 w_time_end = s_pos(end)/v_speed;                % time that the vehicle travel through all sensors
@@ -221,6 +223,7 @@ err_axl_spline = remove_empty_columns(err_axl_spline);
 %% CSV output
 % axle estimation statistics
 csvName = ['outputs/axle_output_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'];
+%csvName = ['outputs/axle_output_s',num2str(s_qtty),'_Delta2.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
@@ -239,6 +242,7 @@ fclose(csvFile);
 
 % GVW estimation statistics
 csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'];
+%csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_Delta2.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
