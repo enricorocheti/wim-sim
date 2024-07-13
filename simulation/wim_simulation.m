@@ -192,13 +192,25 @@ err_gvw_pchip   = zeros(n_sim,v_qtty);
 err_gvw_makima  = zeros(n_sim,v_qtty);
 err_gvw_spline  = zeros(n_sim,v_qtty);
 
+rsd_axl_mv      = zeros(v_qtty, v_max_ax);
+rsd_axl_MLE     = zeros(v_qtty, v_max_ax);
+rsd_axl_pchip   = zeros(v_qtty, v_max_ax);
+rsd_axl_makima  = zeros(v_qtty, v_max_ax);
+rsd_axl_spline  = zeros(v_qtty, v_max_ax);
+
+rsd_gvw_mv      = zeros(v_qtty, 1);
+rsd_gvw_MLE     = zeros(v_qtty, 1);
+rsd_gvw_pchip   = zeros(v_qtty, 1);
+rsd_gvw_makima  = zeros(v_qtty, 1);
+rsd_gvw_spline  = zeros(v_qtty, 1);
+
+% Relative errors
 for i = 1:n_sim
     for j = 1:v_qtty
         for k = 1:config.vehicles(j).axle_qtty
             % axle error
             err_axl_mv(i,j,k)      = (axle_mean(i,j,k)       - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
             err_axl_MLE(i,j,k)     = (axle_MLE(i,j,k)        - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
-            
             err_axl_pchip(i,j,k)   = (axle_sr_pchip(i,j,k)   - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
             err_axl_makima(i,j,k)  = (axle_sr_makima(i,j,k)  - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
             err_axl_spline(i,j,k)  = (axle_sr_spline(i,j,k)  - config.vehicles(j).axle_st_load(k)) * 100 / config.vehicles(j).axle_st_load(k);
@@ -211,6 +223,23 @@ for i = 1:n_sim
         err_gvw_makima(i,j)  = (gvw_sr_makima(i,j)  - v_static_gvw(j)) * 100 / v_static_gvw(j);
         err_gvw_spline(i,j)  = (gvw_sr_spline(i,j)  - v_static_gvw(j)) * 100 / v_static_gvw(j);
     end
+end
+
+% Relative standard deviation
+for j = 1:v_qtty
+    for k = 1:config.vehicles(j).axle_qtty
+        rsd_axl_mv(j,k)     = std(axle_mean(:,j,k)) / mean(axle_mean(:,j,k)) * 100;
+        rsd_axl_MLE(j,k)    = std(axle_MLE(:,j,k)) / mean(axle_MLE(:,j,k)) * 100;
+        rsd_axl_pchip(j,k)  = std(axle_sr_pchip(:,j,k)) / mean(axle_sr_pchip(:,j,k)) * 100;
+        rsd_axl_makima(j,k) = std(axle_sr_makima(:,j,k)) / mean(axle_sr_makima(:,j,k)) * 100;
+        rsd_axl_spline(j,k) = std(axle_sr_spline(:,j,k)) / mean(axle_sr_spline(:,j,k)) * 100;
+    end
+    
+    rsd_gvw_mv(j)       = std(gvw_mean(:,j)) / mean(gvw_mean(:,j)) * 100;
+    rsd_gvw_MLE(j)      = std(gvw_MLE(:,j)) / mean(gvw_MLE(:,j)) * 100;
+    rsd_gvw_pchip(j)    = std(gvw_sr_pchip(:,j)) / mean(gvw_sr_pchip(:,j)) * 100;
+    rsd_gvw_makima(j)   = std(gvw_sr_makima(:,j)) / mean(gvw_sr_makima(:,j)) * 100;
+    rsd_gvw_spline(j)   = std(gvw_sr_spline(:,j)) / mean(gvw_sr_spline(:,j)) * 100;
 end
 
 % removing empty columns from arrays
@@ -227,7 +256,8 @@ csvName = ['outputs/axle_output_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
-    fprintf(csvFile, 'mean_mv,mean_MLE,mean_pchip,mean_makima,mean_spline,');
+    fprintf(csvFile, 'mae_mv,mae_MLE,mae_pchip,mae_makima,mae_spline,');
+    fprintf(csvFile, 'rmse_mv,rmse_MLE,rmse_pchip,rmse_makima,rmse_spline,');
     fprintf(csvFile, 'max_mv,max_MLE,max_pchip,max_makima,max_spline,');
     fprintf(csvFile, 'std_mv,std_MLE,std_pchip,std_makima,std_spline\n');
 else
@@ -236,6 +266,7 @@ end
 
 fprintf(csvFile, '%.0f,', v_speed * 3.6);
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', mean(abs(err_axl_mv(:))), mean(abs(err_axl_MLE(:))), mean(abs(err_axl_pchip(:))), mean(abs(err_axl_makima(:))), mean(abs(err_axl_spline(:))));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', sqrt(mean(err_axl_mv(:).^2)), sqrt(mean(err_axl_MLE(:).^2)), sqrt(mean(err_axl_pchip(:).^2)), sqrt(mean(err_axl_makima(:).^2)), sqrt(mean(err_axl_spline(:).^2)));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', max(abs(err_axl_mv(:))), max(abs(err_axl_MLE(:))), max(abs(err_axl_pchip(:))), max(abs(err_axl_makima(:))), max(abs(err_axl_spline(:))));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f\n', std(err_axl_mv(:)), std(err_axl_MLE(:)), std(err_axl_pchip(:)), std(err_axl_makima(:)), std(err_axl_spline(:)));
 fclose(csvFile);
@@ -246,7 +277,8 @@ csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv']
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
-    fprintf(csvFile, 'mean_mv,mean_MLE,mean_pchip,mean_makima,mean_spline,');
+    fprintf(csvFile, 'mae_mv,mae_MLE,mae_pchip,mae_makima,mae_spline,');
+    fprintf(csvFile, 'rmse_mv,rmse_MLE,rmse_pchip,rmse_makima,rmse_spline,');
     fprintf(csvFile, 'max_mv,max_MLE,max_pchip,max_makima,max_spline,');
     fprintf(csvFile, 'std_mv,std_MLE,std_pchip,std_makima,std_spline\n');
 else
@@ -255,6 +287,7 @@ end
 
 fprintf(csvFile, '%.0f,', v_speed * 3.6);
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', mean(abs(err_gvw_mv(:))), mean(abs(err_gvw_MLE(:))), mean(abs(err_gvw_pchip(:))), mean(abs(err_gvw_makima(:))), mean(abs(err_gvw_spline(:))));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', sqrt(mean(err_gvw_mv(:).^2)), sqrt(mean(err_gvw_MLE(:).^2)), sqrt(mean(err_gvw_pchip(:).^2)), sqrt(mean(err_gvw_makima(:).^2)), sqrt(mean(err_gvw_spline(:).^2)));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', max(abs(err_gvw_mv(:))), max(abs(err_gvw_MLE(:))), max(abs(err_gvw_pchip(:))), max(abs(err_gvw_makima(:))), max(abs(err_gvw_spline(:))));
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f\n', std(err_gvw_mv(:)), std(err_gvw_MLE(:)), std(err_gvw_pchip(:)), std(err_gvw_makima(:)), std(err_gvw_spline(:)));
 fclose(csvFile);
