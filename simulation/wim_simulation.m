@@ -268,7 +268,7 @@ fclose(csvFile);
 
 % axle estimation statistics
 csvName = ['outputs/axle_output_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'];
-%csvName = ['outputs/axle_output_s',num2str(s_qtty),'_Delta2.csv'];
+%csvName = ['outputs/axle_output_s',num2str(s_qtty),'_dDelta2.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
@@ -289,7 +289,7 @@ fclose(csvFile);
 
 % GVW estimation statistics
 csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'];
-%csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_Delta2.csv'];
+%csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_dDelta2.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
