@@ -228,28 +228,44 @@ end
 % Relative standard deviation
 for j = 1:v_qtty
     for k = 1:config.vehicles(j).axle_qtty
-        rsd_axl_mv(j,k)     = std(axle_mean(:,j,k)) / mean(axle_mean(:,j,k)) * 100;
-        rsd_axl_MLE(j,k)    = std(axle_MLE(:,j,k)) / mean(axle_MLE(:,j,k)) * 100;
-        rsd_axl_pchip(j,k)  = std(axle_sr_pchip(:,j,k)) / mean(axle_sr_pchip(:,j,k)) * 100;
+        rsd_axl_mv(j,k)     = std(axle_mean(:,j,k))      / mean(axle_mean(:,j,k))      * 100;
+        rsd_axl_MLE(j,k)    = std(axle_MLE(:,j,k))       / mean(axle_MLE(:,j,k))       * 100;
+        rsd_axl_pchip(j,k)  = std(axle_sr_pchip(:,j,k))  / mean(axle_sr_pchip(:,j,k))  * 100;
         rsd_axl_makima(j,k) = std(axle_sr_makima(:,j,k)) / mean(axle_sr_makima(:,j,k)) * 100;
         rsd_axl_spline(j,k) = std(axle_sr_spline(:,j,k)) / mean(axle_sr_spline(:,j,k)) * 100;
     end
     
-    rsd_gvw_mv(j)       = std(gvw_mean(:,j)) / mean(gvw_mean(:,j)) * 100;
-    rsd_gvw_MLE(j)      = std(gvw_MLE(:,j)) / mean(gvw_MLE(:,j)) * 100;
-    rsd_gvw_pchip(j)    = std(gvw_sr_pchip(:,j)) / mean(gvw_sr_pchip(:,j)) * 100;
-    rsd_gvw_makima(j)   = std(gvw_sr_makima(:,j)) / mean(gvw_sr_makima(:,j)) * 100;
-    rsd_gvw_spline(j)   = std(gvw_sr_spline(:,j)) / mean(gvw_sr_spline(:,j)) * 100;
+    rsd_gvw_mv(j)     = std(gvw_mean(:,j))      / mean(gvw_mean(:,j))      * 100;
+    rsd_gvw_MLE(j)    = std(gvw_MLE(:,j))       / mean(gvw_MLE(:,j))       * 100;
+    rsd_gvw_pchip(j)  = std(gvw_sr_pchip(:,j))  / mean(gvw_sr_pchip(:,j))  * 100;
+    rsd_gvw_makima(j) = std(gvw_sr_makima(:,j)) / mean(gvw_sr_makima(:,j)) * 100;
+    rsd_gvw_spline(j) = std(gvw_sr_spline(:,j)) / mean(gvw_sr_spline(:,j)) * 100;
 end
 
 % removing empty columns from arrays
-err_axl_mv = remove_empty_columns(err_axl_mv);
-err_axl_MLE = remove_empty_columns(err_axl_MLE);
-err_axl_pchip = remove_empty_columns(err_axl_pchip);
+err_axl_mv     = remove_empty_columns(err_axl_mv);
+err_axl_MLE    = remove_empty_columns(err_axl_MLE);
+err_axl_pchip  = remove_empty_columns(err_axl_pchip);
 err_axl_makima = remove_empty_columns(err_axl_makima);
 err_axl_spline = remove_empty_columns(err_axl_spline);
 
 %% CSV output
+% GVW relative standard deviation
+csvName = ['outputs/rsd_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'];
+if ~exist(csvName,'file')
+    csvFile = fopen(csvName, 'w');
+    fprintf(csvFile, 'speed,vehicle,');
+    fprintf(csvFile, 'rsd_mv,rsd_MLE,rsd_pchip,rsd_makima,rsd_spline\n');
+else
+    csvFile = fopen(csvName, 'a');
+end
+
+for j = 1:v_qtty
+    fprintf(csvFile, '%.0f, %d,', v_speed * 3.6, j);
+    fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f\n', rsd_gvw_mv(j), rsd_gvw_MLE(j), rsd_gvw_pchip(j), rsd_gvw_makima(j), rsd_gvw_spline(j));
+end
+fclose(csvFile);
+
 % axle estimation statistics
 csvName = ['outputs/axle_output_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'];
 %csvName = ['outputs/axle_output_s',num2str(s_qtty),'_Delta2.csv'];
