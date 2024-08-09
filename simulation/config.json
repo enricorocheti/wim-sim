@@ -12,13 +12,18 @@
             "axle_st_load": [6000, 10000, 8500, 8500, 8500]
         },
         {
+            "axle_qtty": 6,
+            "axle_dist": [0, 3, 1.5, 3, 3, 3],
+            "axle_st_load": [6000, 6750, 6750, 9000, 9000, 9000]
+        },
+        {
             "axle_qtty": 7,
             "axle_dist": [0, 3, 1.5, 3, 1.5, 3, 1.5],
             "axle_st_load": [6000, 6750, 6750, 8500, 8500, 8500, 8500]
         }
     ],
-    "sensor_qtty": 4,
-    "sensor_distance": 2,
+    "sensor_qtty": 2,
+    "sensor_distance": 3,
     "sensor_rsd": [0.06, 0.13, 0.10, 0.10, 0.05, 0.06, 0.10, 0.11, 0.09, 0.11, 0.11, 0.17, 0.08, 0.18, 0.09, 0.06],
-    "number_of_runs": 1000
+    "number_of_runs": 100
 }

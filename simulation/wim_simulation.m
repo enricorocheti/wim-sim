@@ -22,7 +22,7 @@ for v_speed = v_speeds(:).'
 s_design_1 = 2*(s_qtty - 1)*v_speed/(3*s_qtty^2);
 s_design_2 = (v_speed/(2*s_qtty))*(1/3 + (s_qtty-1)/11.5);
 
-%s_dist = s_design_2;
+%s_dist = s_design_1;
 
 s_pos = zeros(1,s_qtty);        
 for i = 1:s_qtty
@@ -252,6 +252,7 @@ err_axl_spline = remove_empty_columns(err_axl_spline);
 %% CSV output
 % GVW relative standard deviation
 csvName = ['outputs/rsd_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'];
+%csvName = ['outputs/rsd_s',num2str(s_qtty),'_dDelta1.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');
     fprintf(csvFile, 'speed,vehicle,');
@@ -268,7 +269,7 @@ fclose(csvFile);
 
 % axle estimation statistics
 csvName = ['outputs/axle_output_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'];
-%csvName = ['outputs/axle_output_s',num2str(s_qtty),'_dDelta2.csv'];
+% csvName = ['outputs/axle_output_s',num2str(s_qtty),'_dDelta1.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
@@ -289,7 +290,7 @@ fclose(csvFile);
 
 % GVW estimation statistics
 csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_d',num2str(s_dist,2),'.csv'];
-%csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_dDelta2.csv'];
+% csvName = ['outputs/gvw_output_s',num2str(s_qtty),'_dDelta1.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');   
     fprintf(csvFile, 'speed,');
