@@ -3,19 +3,32 @@ close all;
 clear;
 
 %% Configuration
-sensor_dist = 'Delta1';
+sensor_dist = '1';
 sensor_counts = [2, 4, 6, 8, 10, 12, 14, 16];
 markers = {'-o', '-s', '-^', '-d', '-p', '-h', '-x', '-+'};
 estimators = {'mv', 'MLE', 'pchip', 'makima', 'spline'};
 
-axle_data = cell(length(sensor_counts), 1);
-gvw_data = cell(length(sensor_counts), 1);
+% Figure size
+fig_x = 50;
+fig_y = 50;
+fig_w = 700;
+fig_h = 500;
+
+% Y-axis limits
+axle_MAE_ylim  = [0 20];
+axle_RMSE_ylim = [0 25];
+axle_MRE_ylim  = [0 55];
+gvw_MAE_ylim   = [0 15];
+gvw_RMSE_ylim  = [0 18];
+gvw_MRE_ylim   = [0 35];
 
 % Load data from CSV files
+axle_data = cell(length(sensor_counts), 1);
+gvw_data = cell(length(sensor_counts), 1);
 for i = 1:length(sensor_counts)
     sensors = sensor_counts(i);
-    axle_data{i} = readtable(sprintf('axle_output_s%d_%s.csv', sensors, sensor_dist));
-    gvw_data{i} = readtable(sprintf('gvw_output_s%d_%s.csv', sensors, sensor_dist));
+    axle_data{i} = readtable(sprintf('axle_output_s%d_d%s.csv', sensors, sensor_dist));
+    gvw_data{i} = readtable(sprintf('gvw_output_s%d_d%s.csv', sensors, sensor_dist));
 end
 
 for estimator_idx = 1:length(estimators)
