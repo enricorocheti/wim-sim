@@ -13,7 +13,7 @@ threshold = 0.05;       % 5%
 
 % option 1: loaded truck files
 % option 2: empty truck files
-option = 1;
+option = 2;
 
 if option == 1
     speeds = [5, 10, 15, 20, 25, 30, 35];
@@ -38,6 +38,7 @@ end
 for speed = speeds
 for k = 1:vehicle_passes
 
+% Remove corrupted data from analysis
 if option == 1 && (speed == 10 && k == 2)
     continue; % bad csv data
 end
@@ -113,68 +114,68 @@ pulse_end_s2_r = find(diff(s2_r > threshold_s2_r) == -1);
 pulse_end_s3_r = find(diff(s3_r > threshold_s3_r) == -1);
 
 %% Figures
-all_data = [s1_l; s1_r; s2_l; s2_r; s3_l; s3_r];
-common_y_limits = [0, max(all_data)];
-common_x_margin = 10000;
-
-figure('Name', 'Axle Readings', 'NumberTitle', 'off', 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
-
-% S1 Left and Right
-subplot(3, 2, 1);
-plot(s1_l);
-title(['S1 - Normalized Left Axle: ', file]);
-hold on;
-plot([1 length(s1_l)], [threshold_s1_l threshold_s1_l], 'r--');
-hold off;
-ylim(common_y_limits);
-xlim([pulse_ini_s1_l(1)-common_x_margin, pulse_end_s1_l(end)+common_x_margin]);
-
-subplot(3, 2, 2);
-plot(s1_r);
-title('S1 - Normalized Right Axle');
-hold on;
-plot([1 length(s1_r)], [threshold_s1_r threshold_s1_r], 'r--');
-hold off;
-ylim(common_y_limits);
-xlim([pulse_ini_s1_r(1)-common_x_margin, pulse_end_s1_r(end)+common_x_margin]);
-
-% S2 Left and Right
-subplot(3, 2, 3);
-plot(s2_l);
-title('S2 - Normalized Left Axle');
-hold on;
-plot([1 length(s2_l)], [threshold_s2_l threshold_s2_l], 'r--');
-hold off;
-ylim(common_y_limits);
-xlim([pulse_ini_s2_l(1)-common_x_margin, pulse_end_s2_l(end)+common_x_margin]);
-
-subplot(3, 2, 4);
-plot(s2_r);
-title('S2 - Normalized Right Axle');
-hold on;
-plot([1 length(s2_r)], [threshold_s2_r threshold_s2_r], 'r--');
-hold off;
-ylim(common_y_limits);
-xlim([pulse_ini_s2_r(1)-common_x_margin, pulse_end_s2_r(end)+common_x_margin]);
-
-% S3 Left and Right
-subplot(3, 2, 5);
-plot(s3_l);
-title('S3 - Normalized Left Axle');
-hold on;
-plot([1 length(s3_l)], [threshold_s3_l threshold_s3_l], 'r--');
-hold off;
-ylim(common_y_limits);
-xlim([pulse_ini_s3_l(1)-common_x_margin, pulse_end_s3_l(end)+common_x_margin]);
-
-subplot(3, 2, 6);
-plot(s3_r);
-title('S3 - Normalized Right Axle');
-hold on;
-plot([1 length(s3_r)], [threshold_s3_r threshold_s3_r], 'r--');
-hold off;
-ylim(common_y_limits);
-xlim([pulse_ini_s3_r(1)-common_x_margin, pulse_end_s3_r(end)+common_x_margin]);
+% all_data = [s1_l; s1_r; s2_l; s2_r; s3_l; s3_r];
+% common_y_limits = [0, max(all_data)];
+% common_x_margin = 10000;
+% 
+% figure('Name', 'Axle Readings', 'NumberTitle', 'off', 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
+% 
+% % S1 Left and Right
+% subplot(3, 2, 1);
+% plot(s1_l);
+% title(['S1 - Normalized Left Axle: ', file]);
+% hold on;
+% plot([1 length(s1_l)], [threshold_s1_l threshold_s1_l], 'r--');
+% hold off;
+% ylim(common_y_limits);
+% xlim([pulse_ini_s1_l(1)-common_x_margin, pulse_end_s1_l(end)+common_x_margin]);
+% 
+% subplot(3, 2, 2);
+% plot(s1_r);
+% title('S1 - Normalized Right Axle');
+% hold on;
+% plot([1 length(s1_r)], [threshold_s1_r threshold_s1_r], 'r--');
+% hold off;
+% ylim(common_y_limits);
+% xlim([pulse_ini_s1_r(1)-common_x_margin, pulse_end_s1_r(end)+common_x_margin]);
+% 
+% % S2 Left and Right
+% subplot(3, 2, 3);
+% plot(s2_l);
+% title('S2 - Normalized Left Axle');
+% hold on;
+% plot([1 length(s2_l)], [threshold_s2_l threshold_s2_l], 'r--');
+% hold off;
+% ylim(common_y_limits);
+% xlim([pulse_ini_s2_l(1)-common_x_margin, pulse_end_s2_l(end)+common_x_margin]);
+% 
+% subplot(3, 2, 4);
+% plot(s2_r);
+% title('S2 - Normalized Right Axle');
+% hold on;
+% plot([1 length(s2_r)], [threshold_s2_r threshold_s2_r], 'r--');
+% hold off;
+% ylim(common_y_limits);
+% xlim([pulse_ini_s2_r(1)-common_x_margin, pulse_end_s2_r(end)+common_x_margin]);
+% 
+% % S3 Left and Right
+% subplot(3, 2, 5);
+% plot(s3_l);
+% title('S3 - Normalized Left Axle');
+% hold on;
+% plot([1 length(s3_l)], [threshold_s3_l threshold_s3_l], 'r--');
+% hold off;
+% ylim(common_y_limits);
+% xlim([pulse_ini_s3_l(1)-common_x_margin, pulse_end_s3_l(end)+common_x_margin]);
+% 
+% subplot(3, 2, 6);
+% plot(s3_r);
+% title('S3 - Normalized Right Axle');
+% hold on;
+% plot([1 length(s3_r)], [threshold_s3_r threshold_s3_r], 'r--');
+% hold off;
+% ylim(common_y_limits);
+% xlim([pulse_ini_s3_r(1)-common_x_margin, pulse_end_s3_r(end)+common_x_margin]);
 
 %% Instantaneous Axle Weight Algorithms
 
@@ -253,12 +254,17 @@ for i = 1:vehicle_axles
     end
     
     %% Mean S1, S2, S3
-    mean_peak(i) = mean(result_peak(:,i));
-    mean_area(i) = speed * mean(result_area(:,i));   % speed compensation
+    mean_peak(i)     = mean(result_peak(:,i));
+    mean_area(i)     = mean(result_area(:,i)) * speed;  % speed compensation
     mean_resample(i) = mean(result_resample(:,i));
+     
 end
 
-%% Errors and statistics
+%% Errors, statistics and outputs
+GVW_peak     = mean_peak(1) + mean_peak(2) + mean_peak(3) + mean_peak(4) + mean_peak(5) + mean_peak(6);
+GVW_area     = mean_area(1) + mean_area(2) + mean_area(3) + mean_area(4) + mean_area(5) + mean_area(6);
+GVW_resample = mean_resample(1) + mean_resample(2) + mean_resample(3) + mean_resample(4) + mean_resample(5) + mean_resample(6);
+
 A1_A2_static = A1_static/A2_static;
 A1_A3_static = A1_static/A3_static;
 A1_A4_static = A1_static/A4_static;
@@ -301,18 +307,13 @@ err_A1_A4_resample = (A1_A4_resample - A1_A4_static) * 100 / A1_A4_static;
 err_A1_A5_resample = (A1_A5_resample - A1_A5_static) * 100 / A1_A5_static;
 err_A1_A6_resample = (A1_A6_resample - A1_A6_static) * 100 / A1_A6_static;
 
-GVW_peak = mean_peak(1) + mean_peak(2) + mean_peak(3) + mean_peak(4) + mean_peak(5) + mean_peak(6);
-GVW_area = mean_area(1) + mean_area(2) + mean_area(3) + mean_area(4) + mean_area(5) + mean_area(6);
-GVW_resample = mean_resample(1) + mean_resample(2) + mean_resample(3) + mean_resample(4) + mean_resample(5) + mean_resample(6);
-
-%% Results
 csvName = ['outputs/results_v2.csv'];
 if ~exist(csvName,'file')
     csvFile = fopen(csvName, 'w');
     fprintf(csvFile, 'speed,file_idx,');
-%     fprintf(csvFile, 'A1/A2_peak,A1/A3_peak,A1/A4_peak,A1/A5_peak,A1/A6_peak,');
-%     fprintf(csvFile, 'A1/A2_area,A1/A3_area,A1/A4_area,A1/A5_area,A1/A6_area,');
-%     fprintf(csvFile, 'A1/A2_resample,A1/A3_resample,A1/A4_resample,A1/A5_resample,A1/A6_resample,');
+    fprintf(csvFile, 'A12_peak,A13_peak,A14_peak,A15_peak,A16_peak,');
+    fprintf(csvFile, 'A12_area,A13_area,A14_area,A15_area,A16_area,');
+    fprintf(csvFile, 'A12_resample,A13_resample,A14_resample,A15_resample,A16_resample,');
     fprintf(csvFile, 'A1_peak,A2_peak,A3_peak,A4_peak,A5_peak,A6_peak,');
     fprintf(csvFile, 'A1_area,A2_area,A3_area,A4_area,A5_area,A6_area,');
     fprintf(csvFile, 'A1_resample,A2_resample,A3_resample,A4_resample,A5_resample,A6_resample,');
@@ -322,14 +323,46 @@ else
 end
 
 fprintf(csvFile, '%d,(%d),', speed, k);
-% fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', err_A1_A2_peak, err_A1_A3_peak, err_A1_A4_peak, err_A1_A5_peak, err_A1_A6_peak);
-% fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', err_A1_A2_area, err_A1_A3_area, err_A1_A4_area, err_A1_A5_area, err_A1_A6_area);
-% fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,', err_A1_A2_resample, err_A1_A3_resample, err_A1_A4_resample, err_A1_A5_resample, err_A1_A6_resample);
-fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,',  mean_peak(1),  mean_peak(2),  mean_peak(3),  mean_peak(4),  mean_peak(5),  mean_peak(6));
-fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,', mean_area(1), mean_area(2), mean_area(3), mean_area(4), mean_area(5), mean_area(6));
-fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,', mean_resample(1), mean_resample(2), mean_resample(3), mean_resample(4), mean_resample(5), mean_resample(6));
-fprintf(csvFile, '%.3f,%.3f,%.3f\n', GVW_peak, GVW_area, GVW_resample);
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,',       err_A1_A2_peak,     err_A1_A3_peak,     err_A1_A4_peak,     err_A1_A5_peak,     err_A1_A6_peak);
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,',       err_A1_A2_area,     err_A1_A3_area,     err_A1_A4_area,     err_A1_A5_area,     err_A1_A6_area);
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,',       err_A1_A2_resample, err_A1_A3_resample, err_A1_A4_resample, err_A1_A5_resample, err_A1_A6_resample);
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,',  mean_peak(1),       mean_peak(2),       mean_peak(3),       mean_peak(4),       mean_peak(5),       mean_peak(6));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,',  mean_area(1),       mean_area(2),       mean_area(3),       mean_area(4),       mean_area(5),       mean_area(6));
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,',  mean_resample(1),   mean_resample(2),   mean_resample(3),   mean_resample(4),   mean_resample(5),   mean_resample(6));
+fprintf(csvFile, '%.3f,%.3f,%.3f\n',                GVW_peak,           GVW_area,           GVW_resample);
 fclose(csvFile);
 
 end
+end
+
+function plotSignalComponents(pulse_data, title_str)
+    % Decompose the signal into even and odd components
+    even_component = 0.5 * (pulse_data + flipud(pulse_data));
+    odd_component = 0.5 * (pulse_data - flipud(pulse_data));
+    
+    % Find the maximum and minimum points of the odd component
+    [max_value, max_index] = max(odd_component);
+    [min_value, min_index] = min(odd_component);
+
+    % Create a figure
+    figure;
+    
+    % Plotting the even component
+    subplot(2,1,1); % two rows, first plot
+    plot(even_component, 'b-');
+    title([title_str ' - Even Component']);
+    xlabel('Sample Index');
+    ylabel('Amplitude');
+    grid on;
+    
+    % Plotting the odd component
+    subplot(2,1,2); % two rows, second plot
+    plot(odd_component, 'r-');
+    hold on; % Hold the plot for additional plotting
+    plot(max_index, max_value, 'g*', 'MarkerSize', 10); % Green star for max
+    plot(min_index, min_value, 'mo', 'MarkerSize', 10); % Magenta circle for min
+    hold off; % Release the plot hold
+    title([title_str ' - Odd Component']);
+    ylabel('Amplitude');
+    grid on;
 end
