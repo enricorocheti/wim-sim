@@ -113,70 +113,6 @@ pulse_end_s1_r = find(diff(s1_r > threshold_s1_r) == -1);
 pulse_end_s2_r = find(diff(s2_r > threshold_s2_r) == -1);
 pulse_end_s3_r = find(diff(s3_r > threshold_s3_r) == -1);
 
-%% Figures
-% all_data = [s1_l; s1_r; s2_l; s2_r; s3_l; s3_r];
-% common_y_limits = [0, max(all_data)];
-% common_x_margin = 10000;
-% 
-% figure('Name', 'Axle Readings', 'NumberTitle', 'off', 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
-% 
-% % S1 Left and Right
-% subplot(3, 2, 1);
-% plot(s1_l);
-% title(['S1 - Normalized Left Axle: ', file]);
-% hold on;
-% plot([1 length(s1_l)], [threshold_s1_l threshold_s1_l], 'r--');
-% hold off;
-% ylim(common_y_limits);
-% xlim([pulse_ini_s1_l(1)-common_x_margin, pulse_end_s1_l(end)+common_x_margin]);
-% 
-% subplot(3, 2, 2);
-% plot(s1_r);
-% title('S1 - Normalized Right Axle');
-% hold on;
-% plot([1 length(s1_r)], [threshold_s1_r threshold_s1_r], 'r--');
-% hold off;
-% ylim(common_y_limits);
-% xlim([pulse_ini_s1_r(1)-common_x_margin, pulse_end_s1_r(end)+common_x_margin]);
-% 
-% % S2 Left and Right
-% subplot(3, 2, 3);
-% plot(s2_l);
-% title('S2 - Normalized Left Axle');
-% hold on;
-% plot([1 length(s2_l)], [threshold_s2_l threshold_s2_l], 'r--');
-% hold off;
-% ylim(common_y_limits);
-% xlim([pulse_ini_s2_l(1)-common_x_margin, pulse_end_s2_l(end)+common_x_margin]);
-% 
-% subplot(3, 2, 4);
-% plot(s2_r);
-% title('S2 - Normalized Right Axle');
-% hold on;
-% plot([1 length(s2_r)], [threshold_s2_r threshold_s2_r], 'r--');
-% hold off;
-% ylim(common_y_limits);
-% xlim([pulse_ini_s2_r(1)-common_x_margin, pulse_end_s2_r(end)+common_x_margin]);
-% 
-% % S3 Left and Right
-% subplot(3, 2, 5);
-% plot(s3_l);
-% title('S3 - Normalized Left Axle');
-% hold on;
-% plot([1 length(s3_l)], [threshold_s3_l threshold_s3_l], 'r--');
-% hold off;
-% ylim(common_y_limits);
-% xlim([pulse_ini_s3_l(1)-common_x_margin, pulse_end_s3_l(end)+common_x_margin]);
-% 
-% subplot(3, 2, 6);
-% plot(s3_r);
-% title('S3 - Normalized Right Axle');
-% hold on;
-% plot([1 length(s3_r)], [threshold_s3_r threshold_s3_r], 'r--');
-% hold off;
-% ylim(common_y_limits);
-% xlim([pulse_ini_s3_r(1)-common_x_margin, pulse_end_s3_r(end)+common_x_margin]);
-
 %% Instantaneous Axle Weight Algorithms
 
 T_resample = sensor_width/(speed/3.6);
@@ -276,15 +212,9 @@ for i = 1:vehicle_axles
     tire_length_L(i) = tire_length_L(i)/3;
     tire_length_R(i) = tire_length_R(i)/3;
     
-    if i == 1
-        % single tire width is 300 mm
-        footprint_L(i) = tire_length_L(i) * 0.3;
-        footprint_R(i) = tire_length_R(i) * 0.3;
-    else
-        % double tire width is 600 mm
-        footprint_L(i) = tire_length_L(i) * 0.6;
-        footprint_R(i) = tire_length_R(i) * 0.6;
-    end
+    % double tire width is 600 mm
+    footprint_L(i) = tire_length_L(i) * 0.6;
+    footprint_R(i) = tire_length_R(i) * 0.6;
     
     % test this with area and with peak
     mean_freconst(i) = (footprint_L(i) + footprint_R(i)) * mean_area(i); 
@@ -357,9 +287,8 @@ if ~exist(csvName,'file')
     fprintf(csvFile, 'speed,file_idx,');
     fprintf(csvFile, 'A12_peak,A13_peak,A14_peak,A15_peak,A16_peak,');
     fprintf(csvFile, 'A12_area,A13_area,A14_area,A15_area,A16_area,');
-    fprintf(csvFile, 'A12_resample,A13_resample,A14_resample,A15_resample,A16_resample');
+    fprintf(csvFile, 'A12_resample,A13_resample,A14_resample,A15_resample,A16_resample,');
     fprintf(csvFile, 'A12_freconst,A13_freconst,A14_freconst,A15_freconst,A16_freconst\n');
-    csvFile = fopen(csvName, 'a');
 else
     csvFile = fopen(csvName, 'a');
 end
@@ -367,7 +296,7 @@ end
 fprintf(csvFile, '%d,(%d),', speed, k);
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,',	err_A1_A2_peak,     err_A1_A3_peak,     err_A1_A4_peak,     err_A1_A5_peak,     err_A1_A6_peak);
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,',	err_A1_A2_area,     err_A1_A3_area,     err_A1_A4_area,     err_A1_A5_area,     err_A1_A6_area);
-fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f',    err_A1_A2_resample, err_A1_A3_resample, err_A1_A4_resample, err_A1_A5_resample, err_A1_A6_resample);
+fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f,',   err_A1_A2_resample, err_A1_A3_resample, err_A1_A4_resample, err_A1_A5_resample, err_A1_A6_resample);
 fprintf(csvFile, '%.3f,%.3f,%.3f,%.3f,%.3f\n',  err_A1_A2_freconst, err_A1_A3_freconst, err_A1_A4_freconst, err_A1_A5_freconst, err_A1_A6_freconst);
 fclose(csvFile);
 
