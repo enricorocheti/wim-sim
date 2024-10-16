@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below."
+title: "Weigh-In-Motion Simulator"
+authors:
+  - family-names: "Oliveira Rocheti"
+    given-names: "Enrico"
+    orcid: "0000-0001-6678-9137"
+date-released: "2024-10-16"
+version: "1.0.0" 
+url: "https://github.com/enricorocheti/wim-sim"
+keywords:
+  - weigh-in-motion
+  - WIM
+  - dynamic load estimation
+  - MATLAB
+  - simulation

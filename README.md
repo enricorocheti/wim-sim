@@ -1,4 +1,4 @@
-# Weigh-in-Motion Simulator
+# Weigh-In-Motion Simulator
 
 Weigh-in-motion (WIM) systems are used to measure the loads of vehicles while they are moving, eliminating the need for them to stop on static scales. This simulator has been developed as a tool to test and explore these systems using MATLAB scripts, enabling the simulation of multiple vehicles at different speeds with various system layouts. Since it is impractical to change system layout after installation, simulation serves as a valuable tool for system design and testing.
 
